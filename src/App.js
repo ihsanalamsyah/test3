@@ -1,23 +1,46 @@
-import logo from './logo.svg';
+
 import './App.css';
+import Select from 'react-select'
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 function App() {
+  
+  const [datas, setDatas] = useState([])
+  const [userSelect, setUserSelect] = useState("")
+  const [isShow, setIsShow] = useState(false)
+
+  const allBarries = async () =>{
+    const response = await axios('https://pokeapi.co/api/v2/berry')
+    const result = response.data.results.map(data =>{
+      return {
+        label: data.name,
+        value: data.name
+      }
+    })
+    
+    setDatas(result.sort(function(a, b) {return a.label.localeCompare(b.label)}))
+  }
+
+  useEffect(() => {
+    allBarries()
+  })
+
+  const handleSubmit = () =>{
+    setIsShow(state => !state)
+  }
+  const handleOnChange = (event)=>{
+    setUserSelect(event.value)
+  }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>{isShow ? userSelect : " "}  </h1>
+      <button onClick={() => handleSubmit()} disabled={!userSelect}>{isShow ? "Hide Button" : "Show Value"}</button>
+      <br />
+      <br />
+      <Select options={datas} onChange={(e) => handleOnChange(e)} />
     </div>
   );
 }
